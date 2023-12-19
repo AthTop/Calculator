@@ -36,6 +36,14 @@ function createNumberDisplayElement(text) {
     return para;
 }
 
+function updateCurrentNumberDisplay(number) {
+    currentNumberDisplay.textContent = number;
+}
+
+function updateDisplayDiv(value) {
+    displayDiv.insertBefore(createNumberDisplayElement(value), currentNumberDisplay);
+}
+
 const displayDiv = document.querySelector('#display');
 const currentNumberDisplay = document.querySelector('#firstNumber');
 let currentNumber = "";
@@ -47,7 +55,7 @@ let result;
 const numbers = document.querySelectorAll('.numbers');
 numbers.forEach(number => number.addEventListener('click', (e) => {
     currentNumber += e.target.value;
-    currentNumberDisplay.textContent = currentNumber;
+    updateCurrentNumberDisplay(currentNumber);
 }));
 
 // Listen for operator push and attach the current number and operator to display
@@ -57,9 +65,9 @@ operators.forEach(e => e.addEventListener('click', (e) => {
     operator = e.target.value;
     firstOperand = currentNumber;
     currentNumber = "";
-    displayDiv.insertBefore(createNumberDisplayElement(firstOperand), currentNumberDisplay);
-    displayDiv.insertBefore(createNumberDisplayElement(operator), currentNumberDisplay);
-    currentNumberDisplay.textContent = currentNumber;
+    updateDisplayDiv(firstOperand);
+    updateDisplayDiv(operator);
+    updateCurrentNumberDisplay(currentNumber);
 }));
 
 // Listen for equal push, perform operation between the 2 operands
@@ -67,9 +75,9 @@ operators.forEach(e => e.addEventListener('click', (e) => {
 const equal = document.querySelector('.equal');
 equal.addEventListener('click', () => {
     secondOperand = currentNumber;
-    displayDiv.insertBefore(createNumberDisplayElement(secondOperand), currentNumberDisplay);
+    updateDisplayDiv(secondOperand);
     currentNumber = operate(firstOperand, secondOperand);
-    currentNumberDisplay.textContent = currentNumber;
+    updateCurrentNumberDisplay(currentNumber);
     currentNumber = "";
 });
 
