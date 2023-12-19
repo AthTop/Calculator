@@ -15,54 +15,65 @@ function divide(a, b) {
     return a / b;
 }
 
-function operate() {
+// Perform an operation
+function operate(a, b) {
     switch(operator) {
         case '+' :
-            return add(operands[operands.length-2], operands[operands.length-1]);
+            return add(a, b);
         case '-' :
-            return subtract(operands[operands.length-2], operands[operands.length-1]);
+            return subtract(a, b);
         case '*' :
-            return multiply(operands[operands.length-2], operands[operands.length-1]);
+            return multiply(a, b);
         case '/' :
-            return divide(operands[operands.length-2], operands[operands.length-1]);
+            return divide(a, b);
     }
 }
 
-function isAlphanumeric(str) {
-    return str.match(/^[a-zA-Z0-9]+$/) !== null;
+function createNumberDisplayElement(text) {
+    const para = document.createElement('p');
+    const node = document.createTextNode(text);
+    para.appendChild(node);
+    return para;
 }
 
-function parseNumber(e) {
-    if(isAlphanumeric(e.target.value)) currentNumber += e.target.value;
-}
-
-function parseOperator(e) {
-    operator = e.target.value;
-    operands.push(Number(currentNumber));
-    if (operands.length > 1) {
-        operands.push(operate());
-        console.log(operands[operands.length-1]);
-    }
-    currentNumber = "";
-}
-
-
-
+const displayDiv = document.querySelector('#display');
+const currentNumberDisplay = document.querySelector('#firstNumber');
 let currentNumber = "";
-let operands = [];
+let firstOperand;
+let secondOperand;
 let operator;
+let result;
 
 const numbers = document.querySelectorAll('.numbers');
-numbers.forEach(number => number.addEventListener('click', parseNumber))
+numbers.forEach(number => number.addEventListener('click', (e) => {
+    currentNumber += e.target.value;
+    currentNumberDisplay.textContent = currentNumber;
+}));
+
+// Listen for operator push and attach the current number and operator to display
+// and prepare for the next number
 const operators = document.querySelectorAll('.operators');
-operators.forEach(e => e.addEventListener('click', parseOperator))
+operators.forEach(e => e.addEventListener('click', (e) => {
+    operator = e.target.value;
+    firstOperand = currentNumber;
+    currentNumber = "";
+    displayDiv.insertBefore(createNumberDisplayElement(firstOperand), currentNumberDisplay);
+    displayDiv.insertBefore(createNumberDisplayElement(operator), currentNumberDisplay);
+    currentNumberDisplay.textContent = currentNumber;
+}));
+
+// Listen for equal push, perform operation between the 2 operands
+// append the relevant elements to display
 const equal = document.querySelector('.equal');
 equal.addEventListener('click', () => {
-    operands.push(Number(currentNumber));
-    result = operate();
-    console.log(result);
-    operands.splice(0, operands.length);
+    secondOperand = currentNumber;
+    displayDiv.insertBefore(createNumberDisplayElement(secondOperand), currentNumberDisplay);
+    currentNumber = operate(firstOperand, secondOperand);
+    currentNumberDisplay.textContent = currentNumber;
+    currentNumber = "";
 });
+
+
 
 
 
